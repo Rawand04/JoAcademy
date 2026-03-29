@@ -1,10 +1,21 @@
-// to establish connection with mongodb
-
 import { MongoClient } from "mongodb";
 
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  throw new Error("Please add MONGODB_URI to your environment variables");
+}
+
+let client;
+let clientPromise;
+
+if (!global._mongoClientPromise) {
+  client = new MongoClient(uri);
+  global._mongoClientPromise = client.connect();
+}
+
+clientPromise = global._mongoClientPromise;
+
 export async function connectToDatabase() {
-  const client = await MongoClient.connect(
-    "mongodb+srv://rawand_db_user:YHM7u6wCJxXV6Zl1@cluster0.fgx9ilw.mongodb.net/my-site?retryWrites=true&w=majority&authSource=admin",
-  );
-  return client;
+  return clientPromise;
 }
