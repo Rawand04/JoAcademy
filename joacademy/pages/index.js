@@ -157,31 +157,31 @@ export default function Home() {
               title: "JO Academy Courses",
               desc: "Courses for all grades",
               link: "/courses",
-              src: "icons/jo-services/exams.svg",
+              src: "images/jo-services/courses.svg",
             },
             {
               title: "Online Exams",
               desc: "Take your exams online with ease.",
               link: "/",
-              src: "icons/jo-services/exams.svg",
+              src: "images/jo-services/exams.svg",
             },
             {
-              title: "Live Sessions",
+              title: "Interactive Courses",
               desc: "Join live interactive sessions with top teachers.",
               link: "/",
-              src: "icons/jo-services/exams.svg",
+              src: "images/jo-services/interactive-courses2.svg",
             },
             {
-              title: "Recorded Lectures",
+              title: "Office Hourse",
               desc: "Watch high-quality recorded lectures at your own pace.",
               link: "/",
-              src: "icons/jo-services/exams.svg",
+              src: "images/jo-services/office-hours.svg",
             },
             {
-              title: "Study Materials",
+              title: "WorkSheets and Summaries",
               desc: "Access a wide range of study materials.",
               link: "/",
-              src: "icons/jo-services/exams.svg",
+              src: "images/jo-services/worksheet.svg",
             },
           ].map((item, i) => (
             <Link key={i} href={item.link}>
@@ -190,8 +190,6 @@ export default function Home() {
                 <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white group-hover:opacity-0 transition-opacity duration-300">
                   <img
                     src={item.src}
-                    width={120}
-                    height={120}
                     className="object-contain"
                   />
                   <h3 className="text-blue-800 font-bold text-lg">

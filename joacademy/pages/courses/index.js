@@ -1,17 +1,95 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FilterCourses } from "@/lib/util";
 import CourseCard from "@/components/course-card";
-import PaginationControls from "@/components/pagination-controls";
+import Search from "@/components/search";
+import FilterFields from "@/components/filter-fields";
 
-export default function CoursesPage({
-  initialCourses,
-  currentPage,
-  totalPages,
-}) {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function CoursesPage() {
+  let apiUrl = "https://admin.joacademy.net/api/v1/courses-filter?";
+  const [data, setData] = useState([]);
+  const [courseId, setCourseId] = useState(null);
+  const [sectionId, setSectionId] = useState(null);
+  const [teacherId, setTeacherId] = useState(null);
+  const [programId, setProgramId] = useState(null);
+  const [api, setApi] = useState(`${apiUrl}`);
 
-  const filteredCourses = FilterCourses(initialCourses, searchQuery);
+  const page = 1;
+  const perPage = 12;
+
+  function handleFilteredData(data) {
+    setData(data);
+  }
+
+  useEffect(() => {
+   
+    if (!programId) {
+      apiUrl += `&categories[]=1709`;
+    } else {
+      apiUrl += `&categories[]=${programId}`;
+    }
+
+    if (sectionId) {
+      apiUrl += `&subcategories[]=${sectionId}`;
+    }
+
+    if (courseId) {
+      apiUrl += `&subjects[]=${courseId}`;
+    }
+
+    if (teacherId) {
+      apiUrl += `&teachers[]=${teacherId}`;
+    }
+
+    setApi(apiUrl);
+  }, [programId, sectionId, courseId, teacherId]);
+
+  //fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log("fetch from: ", api);
+        const response = await fetch(api, {
+          headers: {
+            Accept: "application/json",
+            program: 1,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch");
+        }
+
+        const result = await response.json();
+        setData(result.data.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [api]);
+
+  function handleProgramFromChild(data) {
+    setProgramId(data);
+    console.log(data);
+    // console.log(apiUrl);
+  }
+
+  function handleSectionFromChild(data) {
+    setSectionId(data);
+    console.log(data);
+  }
+
+  function handleCourseFromChild(data) {
+    setCourseId(data);
+    console.log(data);
+  }
+
+  function handleTeacherFromChild(data) {
+    setTeacherId(data);
+
+    console.log(data);
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen px-4 py-6">
@@ -31,23 +109,17 @@ export default function CoursesPage({
         </p>
       </div>
 
-      {/* Search */}
-      <div className="flex gap-2 mb-6 w-3/4 m-auto">
-        <input
-          placeholder="Search here"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 border rounded-lg px-4 py-3 text-sm bg-white"
-        />
+      <Search courses={data} onFilter={handleFilteredData} />
 
-        <button className="bg-blue-800 text-white px-6 rounded-lg flex items-center gap-2">
-          Filter
-        </button>
-      </div>
-
+      <FilterFields
+        sendCourseToParent={handleCourseFromChild}
+        sendProgramToParent={handleProgramFromChild}
+        sendSectionToParent={handleSectionFromChild}
+        sendTeacherToParent={handleTeacherFromChild}
+      />
       {/* Courses */}
       <div className="flex flex-wrap gap-6 justify-center">
-        {filteredCourses.map((course) => (
+        {data.map((course) => (
           <CourseCard
             key={course.id}
             teacherName={course.teacher?.name}
@@ -60,44 +132,6 @@ export default function CoursesPage({
           />
         ))}
       </div>
-
-      {/* Pagination */}
-      <PaginationControls currentPage={currentPage} totalPages={totalPages} />
     </div>
   );
-}
-
-export async function getServerSideProps(context) {
-  const page = context.query.page || 1;
-  const perPage = 12;
-
-  try {
-    const response = await fetch(
-      `https://admin.joacademy.net/api/v1/courses-filter?search=&page=${page}&per_page=${perPage}&ordered=true`,
-      {
-        headers: {
-          Accept: "application/json",
-          program: 1,
-        },
-      }
-    );
-
-    const result = await response.json();
-
-    return {
-      props: {
-        initialCourses: result.data.data,
-        currentPage: result.data.current_page,
-        totalPages: result.data.last_page,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        initialCourses: [],
-        currentPage: 1,
-        totalPages: 1,
-      },
-    };
-  }
 }

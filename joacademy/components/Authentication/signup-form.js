@@ -3,7 +3,8 @@ import { useState, useRef } from "react";
 
 // Helper for API calls
 async function createUser(type, name, phone_number) {
-  const response = await fetch(`/api/auth/signup`, {
+  const response = await fetch(`/api/auth/signup`
+    , {
     method: "POST",
     body: JSON.stringify({ name, phone_number, type }),
     headers: { "Content-Type": "application/json" },

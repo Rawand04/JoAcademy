@@ -1,19 +1,7 @@
 import { useState } from "react";
 
 export default function DependentSelect() {
-  const program = [
-    { id: 1, name: "Tawjihi 2010" },
-    { id: 2, name: "Takmily 2007" },
-    { id: 3, name: "Tawjihi 2008" },
-    { id: 4, name: "Takmily (first year) 2008" },
-    { id: 5, name: "Tawjihi 2009" },
-  ];
 
-  const section = {
-    Arabic: ["Ahmad", "Mohammad"],
-    English: ["Khalid", "Shadi"],
-    Math: ["Mustafa", "Saleh"],
-  };
 
   const subject = {
 
